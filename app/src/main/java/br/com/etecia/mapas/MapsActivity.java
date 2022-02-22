@@ -1,28 +1,29 @@
 package br.com.etecia.mapas;
 
 import androidx.fragment.app.FragmentActivity;
+
+import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import br.com.etecia.mapas.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.PolygonOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-private ActivityMapsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-     binding = ActivityMapsBinding.inflate(getLayoutInflater());
-     setContentView(binding.getRoot());
-
+        setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -42,9 +43,42 @@ private ActivityMapsBinding binding;
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        final LatLng etecia = new LatLng(-23.702428270619173, -46.68936283309112);
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+
+                Double latitude, longitude, totalLatLang;
+
+                latitude = latLng.latitude;
+                longitude = latLng.longitude;
+
+                totalLatLang = latitude+longitude;
+
+                Toast.makeText(getApplicationContext(),
+                        "Latitude: " + latitude + "\n" +
+                                "Longitude: " + longitude + "\nTotal: "+totalLatLang,
+                        Toast.LENGTH_SHORT).show();
+
+                mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("Local do clique novo")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.onibus)));
+
+            }
+        });
+
+
+        mMap.addMarker(new MarkerOptions()
+                .position(etecia)
+                .title("Etec Irmã Agostina")
+                .icon(
+                        BitmapDescriptorFactory.fromResource(R.drawable.escola)
+                )
+        );
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(etecia, 13));
     }
 }
